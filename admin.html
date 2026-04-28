@@ -116,6 +116,13 @@
     .save-msg { font-size: 0.78rem; color: #2e7d52; margin-left: 0.3rem; }
     .save-msg.err { color: #c0392b; }
 
+    /* 画像ボタン */
+    .img-upload-btn {
+      font-size: 0.78rem; color: #4a8ab4; background: #edf5fd;
+      border: 1px solid #c5dff0; padding: 0.4rem 0.9rem;
+      border-radius: 2px; cursor: pointer; font-family: inherit;
+    }
+
     /* token入力 */
     .token-note {
       background: #f8fbfd; border: 1px solid #d8e6f0; border-radius: 3px;
@@ -230,7 +237,12 @@
         </div>
         <div class="editor-full">
           <label class="editor-label" for="editBody">本文 *</label>
-          <textarea class="editor-textarea" id="editBody" placeholder="本文を書いてください。空行で段落が分かれます。"></textarea>
+          <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.5rem;flex-wrap:wrap;">
+            <button class="img-upload-btn" type="button" onclick="document.getElementById('adminImgInput').click()">📷 画像を挿入</button>
+            <span style="font-size:0.72rem;color:#8aaabb;" id="adminImgStatus">JPG・PNG・GIF対応（5MB以下）</span>
+            <input type="file" id="adminImgInput" accept="image/*" style="display:none" onchange="handleAdminImage(this)">
+          </div>
+          <textarea class="editor-textarea" id="editBody" placeholder="本文を書いてください。空行で段落が分かれます。&#10;画像は「📷 画像を挿入」ボタンで追加できます。"></textarea>
         </div>
         <div class="editor-full">
           <label class="editor-label" for="editVerse">聖書の言葉（任意）</label>
@@ -481,6 +493,48 @@
   }
 
   // ===== ユーティリティ =====
+  // ===== 画像アップロード（管理画面） =====
+  async function handleAdminImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { alert('5MB以下の画像を選んでください'); return; }
+
+    const status = document.getElementById('adminImgStatus');
+    status.textContent = 'アップロード中…';
+
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise((res, rej) => {
+        reader.onload = e => res(e.target.result.split(',')[1]);
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+      });
+
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `images/${Date.now()}_${safeName}`;
+
+      const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+        method: 'PUT',
+        headers: ghHeaders(),
+        body: JSON.stringify({ message: '画像をアップロード', content: base64 })
+      });
+      if (!r.ok) { const d = await r.json(); throw new Error(d.message); }
+
+      const ta = document.getElementById('editBody');
+      const tag = `\n[img:${path}]\n`;
+      const start = ta.selectionStart;
+      ta.value = ta.value.slice(0, start) + tag + ta.value.slice(ta.selectionEnd);
+      ta.selectionStart = ta.selectionEnd = start + tag.length;
+      ta.focus();
+
+      status.textContent = '✓ 挿入しました';
+      setTimeout(() => { status.textContent = 'JPG・PNG・GIF対応（5MB以下）'; }, 2000);
+    } catch(e) {
+      status.textContent = '失敗: ' + e.message;
+    }
+    input.value = '';
+  }
+
   function todayJa() {
     const d = new Date();
     return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
