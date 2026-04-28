@@ -5,54 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>記事 — ゆぺのにっき</title>
   <link rel="stylesheet" href="style.css?v=3">
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
   <style>
-    /* ===== インライン編集パネル ===== */
+    /* ===== Quill カスタマイズ ===== */
+    .ql-toolbar.ql-snow {
+      border: 1px solid #d8e6f0;
+      border-bottom: none;
+      border-radius: 3px 3px 0 0;
+      background: #f8fbfd;
+      font-family: inherit;
+    }
+    .ql-container.ql-snow {
+      border: 1px solid #d8e6f0;
+      border-radius: 0 0 3px 3px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: #1e2d3a;
+    }
+    .ql-editor { min-height: 260px; line-height: 1.9; padding: 1rem; }
+    .ql-editor.ql-blank::before { color: #b0c8d8; font-style: normal; }
+    .ql-snow .ql-picker { color: #4a6070; }
+    .ql-snow .ql-stroke { stroke: #4a6070; }
+    .ql-snow .ql-fill { fill: #4a6070; }
+    .ql-snow.ql-toolbar button:hover .ql-stroke,
+    .ql-snow.ql-toolbar button.ql-active .ql-stroke { stroke: #4a8ab4; }
+    .ql-snow.ql-toolbar button:hover .ql-fill,
+    .ql-snow.ql-toolbar button.ql-active .ql-fill { fill: #4a8ab4; }
+
+    /* ===== 編集オーバーレイ ===== */
     #inlineEditor {
       display: none;
       position: fixed; inset: 0;
-      background: rgba(10,20,30,0.55);
+      background: rgba(10,20,30,0.6);
       z-index: 500;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 1rem;
+      padding: 1.5rem 1rem;
+      overflow-y: auto;
     }
     #inlineEditor.open { display: flex; }
     .ie-panel {
       background: #fff;
       border-radius: 6px;
-      width: 100%;
-      max-width: 700px;
-      max-height: 90vh;
-      overflow-y: auto;
+      width: 100%; max-width: 760px;
       padding: 2rem;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+      margin: auto;
     }
     .ie-panel h2 {
       font-size: 0.9rem; font-weight: normal;
       letter-spacing: 0.18em; color: #4a6070;
       margin-bottom: 1.5rem; padding-bottom: 0.8rem;
       border-bottom: 1px solid #eef4f8;
+      display: flex; align-items: center; gap: 0.5rem;
     }
-    .ie-label { font-size: 0.75rem; letter-spacing: 0.1em; color: #4a6070; display: block; margin-bottom: 0.4rem; }
-    .ie-input, .ie-textarea {
+    .ie-label {
+      font-size: 0.75rem; letter-spacing: 0.1em;
+      color: #4a6070; display: block; margin-bottom: 0.4rem;
+    }
+    .ie-input {
       width: 100%; border: 1px solid #d8e6f0; border-radius: 2px;
       padding: 0.65rem 0.85rem; font-size: 0.9rem; font-family: inherit;
       color: #1e2d3a; background: #fafcfe; outline: none;
       box-sizing: border-box; margin-bottom: 1rem;
       transition: border-color 0.2s;
     }
-    .ie-input:focus, .ie-textarea:focus { border-color: #4a8ab4; background: #fff; }
-    .ie-textarea { resize: vertical; line-height: 1.8; min-height: 220px; }
+    .ie-input:focus { border-color: #4a8ab4; background: #fff; }
     .ie-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .ie-actions { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; margin-top: 0.5rem; }
+    .ie-actions {
+      display: flex; gap: 0.7rem; align-items: center;
+      flex-wrap: wrap; margin-top: 1.2rem;
+    }
     .ie-btn-save {
       background: #1e2d3a; color: #fff; border: none;
-      padding: 0.65rem 1.8rem; font-size: 0.82rem;
+      padding: 0.65rem 2rem; font-size: 0.82rem;
       letter-spacing: 0.12em; font-family: inherit;
       cursor: pointer; border-radius: 2px; transition: opacity 0.2s;
     }
     .ie-btn-save:hover { opacity: 0.8; }
-    .ie-btn-save:disabled { opacity: 0.5; cursor: default; }
+    .ie-btn-save:disabled { opacity: 0.45; cursor: default; }
     .ie-btn-cancel {
       background: none; border: 1px solid #d8e6f0; color: #8aaabb;
       padding: 0.65rem 1.2rem; font-size: 0.82rem;
@@ -61,48 +92,36 @@
     }
     .ie-msg { font-size: 0.78rem; color: #2e7d52; }
     .ie-msg.err { color: #c0392b; }
+    .ie-section { margin-bottom: 1rem; }
 
-    /* 画像アップロードボタン */
-    .img-upload-row {
-      display: flex; align-items: center; gap: 0.7rem;
-      margin-bottom: 1rem; flex-wrap: wrap;
-    }
-    .img-upload-btn {
-      font-size: 0.78rem; color: #4a8ab4; background: #edf5fd;
-      border: 1px solid #c5dff0; padding: 0.4rem 0.9rem;
-      border-radius: 2px; cursor: pointer; font-family: inherit;
-    }
-    .img-upload-note { font-size: 0.72rem; color: #8aaabb; }
-    #imgFileInput { display: none; }
-
-    /* 記事内画像 */
+    /* ===== 記事内画像 ===== */
     .post-body img {
       max-width: 100%; border-radius: 4px;
       margin: 1rem 0; display: block;
     }
 
-    /* 管理バー */
+    /* ===== 管理バー ===== */
     #adminBar {
       position: fixed; bottom: 1.5rem; left: 50%;
       transform: translateX(-50%);
-      background: #1e2d3a; color: #fff; border-radius: 4px;
-      display: none; align-items: center; gap: 0.5rem;
-      padding: 0.6rem 1rem; z-index: 499;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      background: #1e2d3a; color: #fff; border-radius: 6px;
+      display: none; align-items: center; gap: 0.6rem;
+      padding: 0.65rem 1.2rem; z-index: 499;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       font-size: 0.8rem; font-family: inherit; white-space: nowrap;
     }
     #adminBar.show { display: flex; }
-    .ab-edit {
-      color: #fff; background: #4a8ab4; text-decoration: none;
-      padding: 0.35rem 0.9rem; border-radius: 2px; font-size: 0.78rem;
-      border: none; cursor: pointer; font-family: inherit;
+    .ab-label { color: #c8a84a; font-size: 0.75rem; margin-right: 0.2rem; }
+    .ab-btn {
+      border: none; cursor: pointer; padding: 0.4rem 1rem;
+      border-radius: 3px; font-size: 0.78rem; font-family: inherit;
+      transition: opacity 0.2s;
     }
-    .ab-delete {
-      color: #fff; background: #c0392b; border: none; cursor: pointer;
-      padding: 0.35rem 0.9rem; border-radius: 2px; font-size: 0.78rem;
-      font-family: inherit;
-    }
-    .ab-admin { color: #8aaabb; font-size: 0.75rem; text-decoration: none; margin-left: 0.3rem; }
+    .ab-btn:hover { opacity: 0.85; }
+    .ab-btn:disabled { opacity: 0.5; cursor: default; }
+    .ab-edit   { background: #4a8ab4; color: #fff; }
+    .ab-delete { background: #c0392b; color: #fff; }
+    .ab-admin  { color: #8aaabb; font-size: 0.75rem; text-decoration: none; margin-left: 0.2rem; }
   </style>
 </head>
 <body>
@@ -121,36 +140,43 @@
     <p style="text-align:center;color:#8aaabb;padding:4rem 0;">読み込み中…</p>
   </article>
 
-  <!-- インライン編集パネル -->
+  <!-- ===== インライン編集パネル ===== -->
   <div id="inlineEditor">
     <div class="ie-panel">
       <h2>✏️ 記事を編集</h2>
+
       <div class="ie-row">
-        <div>
+        <div class="ie-section">
           <label class="ie-label">タイトル *</label>
-          <input class="ie-input" type="text" id="ieTitle">
+          <input class="ie-input" type="text" id="ieTitle" placeholder="記事のタイトル">
         </div>
-        <div>
-          <label class="ie-label">日付 *</label>
-          <input class="ie-input" type="text" id="ieDate">
+        <div class="ie-section">
+          <label class="ie-label">日付</label>
+          <input class="ie-input" type="text" id="ieDate" placeholder="例：2026年4月28日">
         </div>
       </div>
-      <label class="ie-label">概要（省略可）</label>
-      <input class="ie-input" type="text" id="ieExcerpt">
-      <label class="ie-label">カテゴリ</label>
-      <input class="ie-input" type="text" id="ieCategory">
-      <label class="ie-label">本文 *</label>
 
-      <!-- 画像挿入ボタン -->
-      <div class="img-upload-row">
-        <button class="img-upload-btn" onclick="document.getElementById('imgFileInput').click()">📷 画像を挿入</button>
-        <span class="img-upload-note" id="imgUploadStatus">JPG・PNG・GIF対応（5MB以下）</span>
-        <input type="file" id="imgFileInput" accept="image/*" onchange="handleImageUpload(this)">
+      <div class="ie-row">
+        <div class="ie-section">
+          <label class="ie-label">概要（省略可）</label>
+          <input class="ie-input" type="text" id="ieExcerpt" placeholder="一覧に表示される説明文">
+        </div>
+        <div class="ie-section">
+          <label class="ie-label">カテゴリ</label>
+          <input class="ie-input" type="text" id="ieCategory" placeholder="例：子ども・教育">
+        </div>
       </div>
 
-      <textarea class="ie-textarea" id="ieBody" rows="12"></textarea>
-      <label class="ie-label">聖書の言葉（任意）</label>
-      <input class="ie-input" type="text" id="ieVerse">
+      <div class="ie-section">
+        <label class="ie-label">本文（太字・見出し・リスト・画像など使えます）</label>
+        <div id="ieQuill"></div>
+      </div>
+
+      <div class="ie-section">
+        <label class="ie-label">聖書の言葉（任意）</label>
+        <input class="ie-input" type="text" id="ieVerse" placeholder="例：神は愛です。— ヨハネの手紙一 4:8">
+      </div>
+
       <div class="ie-actions">
         <button class="ie-btn-save" id="ieSaveBtn" onclick="ieSave()">保存して公開する</button>
         <button class="ie-btn-cancel" onclick="ieClose()">キャンセル</button>
@@ -161,9 +187,9 @@
 
   <!-- 管理バー -->
   <div id="adminBar">
-    <span style="color:#c8a84a;margin-right:0.3rem;">✝ 管理</span>
-    <button class="ab-edit" onclick="ieOpen()">✏️ 編集</button>
-    <button class="ab-delete" id="abDeleteBtn" onclick="doDelete()">🗑 削除</button>
+    <span class="ab-label">✝ 管理</span>
+    <button class="ab-btn ab-edit" onclick="ieOpen()">✏️ 編集</button>
+    <button class="ab-btn ab-delete" id="abDeleteBtn" onclick="doDelete()">🗑 削除</button>
     <a class="ab-admin" href="admin.html">管理画面 →</a>
   </div>
 
@@ -193,21 +219,24 @@
     <p class="footer-copy">&copy; 2026 ゆぺ &nbsp;|&nbsp; 本サイトはアフィリエイト広告を含みます</p>
   </footer>
 
-  <script src="blog.js?v=4"></script>
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <script src="blog.js?v=5"></script>
   <script>
     const postId = getParam('id');
     const el = document.getElementById('postContent');
     let _currentPost = null;
+    let quill = null;
 
-    // ===== 本文を HTML に変換（画像対応）=====
+    // ===== 本文レンダリング（HTML & 旧プレーンテキスト両対応）=====
     function renderBody(body) {
+      if (!body) return '';
+      if (body.trim().startsWith('<')) return body; // Quill HTML
+      // 旧フォーマット（プレーンテキスト + [img:...]）
       return body.split(/\n\n+/).map(para => {
         const t = para.trim();
-        // [img:URL] を画像タグに変換
         const imgMatch = t.match(/^\[img:(.+?)\]$/);
         if (imgMatch) {
           const src = imgMatch[1];
-          // GitHub Pages の絶対URLに変換
           const url = src.startsWith('http') ? src
             : 'https://conny3100-blip.github.io/yupe-hp/' + src;
           return `<img src="${url}" alt="" loading="lazy">`;
@@ -228,7 +257,7 @@
       el.innerHTML = `
         <p class="pr-notice">※ 本記事にはアフィリエイト広告（楽天・Etsy）が含まれる場合があります。</p>
         <header class="post-single-header">
-          <time class="post-date">${post.date}</time>
+          <time class="post-date">${escHtml(post.date)}</time>
           <h1>${escHtml(post.title)}</h1>
         </header>
         <div class="post-body">${bodyHtml}${verseHtml}</div>
@@ -245,11 +274,7 @@
         </div>
         <a class="back-link" href="index.html">← Back to Home</a>
       `;
-
-      // 管理者バー表示
-      if (isAdmin()) {
-        document.getElementById('adminBar').classList.add('show');
-      }
+      if (isAdmin()) document.getElementById('adminBar').classList.add('show');
     }
 
     // ===== 初期表示 =====
@@ -262,39 +287,122 @@
       renderPost(post);
     });
 
-    // ===== インライン編集 =====
+    // ===== Quill 初期化 =====
+    function initQuill() {
+      if (quill) return;
+      quill = new Quill('#ieQuill', {
+        theme: 'snow',
+        placeholder: '本文を書いてください…',
+        modules: {
+          toolbar: {
+            container: [
+              [{ header: [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ color: [] }, { background: [] }],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              ['blockquote', 'link', 'image'],
+              ['clean']
+            ],
+            handlers: { image: quillImageHandler }
+          }
+        }
+      });
+    }
+
+    // Quill の画像ボタン → GitHub にアップロード
+    async function quillImageHandler() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) { alert('5MB以下の画像を選んでください'); return; }
+
+        const range = quill.getSelection(true);
+        quill.insertText(range.index, 'アップロード中…', { color: '#8aaabb' });
+
+        try {
+          const url = await uploadToGitHub(file);
+          quill.deleteText(range.index, 7);
+          quill.insertEmbed(range.index, 'image', url);
+          quill.setSelection(range.index + 1);
+        } catch(e) {
+          quill.deleteText(range.index, 7);
+          alert('画像のアップロードに失敗しました: ' + e.message);
+        }
+      };
+      input.click();
+    }
+
+    // GitHub に画像をアップロードして URL を返す
+    async function uploadToGitHub(file) {
+      const reader = new FileReader();
+      const base64 = await new Promise((res, rej) => {
+        reader.onload = e => res(e.target.result.split(',')[1]);
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+      });
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `images/${Date.now()}_${safeName}`;
+      const token = localStorage.getItem('yupe_gh_token');
+      const r = await fetch(`https://api.github.com/repos/conny3100-blip/yupe-hp/contents/${path}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'token ' + token,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: '画像をアップロード', content: base64 })
+      });
+      if (!r.ok) { const d = await r.json(); throw new Error(d.message); }
+      return `https://conny3100-blip.github.io/yupe-hp/${path}`;
+    }
+
+    // ===== インライン編集を開く =====
     function ieOpen() {
       if (!_currentPost) return;
+      initQuill();
       document.getElementById('ieTitle').value    = _currentPost.title || '';
       document.getElementById('ieDate').value     = _currentPost.date || '';
       document.getElementById('ieExcerpt').value  = _currentPost.excerpt || '';
       document.getElementById('ieCategory').value = _currentPost.category || '';
-      document.getElementById('ieBody').value     = _currentPost.body || '';
       document.getElementById('ieVerse').value    = _currentPost.verse || '';
       document.getElementById('ieMsg').textContent = '';
       document.getElementById('ieSaveBtn').disabled = false;
+
+      // 本文をQuillにセット
+      const body = _currentPost.body || '';
+      if (body.trim().startsWith('<')) {
+        quill.root.innerHTML = body;
+      } else {
+        // プレーンテキストをHTMLに変換してセット
+        const html = body.split(/\n\n+/).map(p => `<p>${p.replace(/\n/g,' ')}</p>`).join('');
+        quill.root.innerHTML = html;
+      }
+
       document.getElementById('inlineEditor').classList.add('open');
+      setTimeout(() => quill.focus(), 100);
     }
 
     function ieClose() {
       document.getElementById('inlineEditor').classList.remove('open');
     }
-
-    // 背景クリックで閉じる
     document.getElementById('inlineEditor').addEventListener('click', e => {
       if (e.target === document.getElementById('inlineEditor')) ieClose();
     });
 
+    // ===== 保存 =====
     async function ieSave() {
       const title    = document.getElementById('ieTitle').value.trim();
       const date     = document.getElementById('ieDate').value.trim();
-      const body     = document.getElementById('ieBody').value.trim();
-      const excerpt  = document.getElementById('ieExcerpt').value.trim()
-        || body.replace(/\[img:[^\]]+\]/g,'').replace(/\n/g,' ').substring(0, 80) + '…';
-      const category = document.getElementById('ieCategory').value.trim();
       const verse    = document.getElementById('ieVerse').value.trim();
+      const category = document.getElementById('ieCategory').value.trim();
+      const body     = quill.root.innerHTML;
+      const excerpt  = document.getElementById('ieExcerpt').value.trim()
+        || quill.getText().replace(/\n/g,' ').substring(0, 80) + '…';
 
-      if (!title || !body) { alert('タイトルと本文は必須です。'); return; }
+      if (!title) { alert('タイトルを入力してください。'); return; }
 
       const btn = document.getElementById('ieSaveBtn');
       const msg = document.getElementById('ieMsg');
@@ -314,7 +422,7 @@
         renderPost(_currentPost);
         setTimeout(() => ieClose(), 1000);
       } catch(e) {
-        msg.textContent = '保存失敗: ' + e.message;
+        msg.textContent = '失敗: ' + e.message;
         msg.className = 'ie-msg err';
         btn.disabled = false;
       }
@@ -337,54 +445,6 @@
         btn.textContent = '🗑 削除';
         btn.disabled = false;
       }
-    }
-
-    // ===== 画像アップロード =====
-    async function handleImageUpload(input) {
-      const file = input.files[0];
-      if (!file) return;
-      if (file.size > 5 * 1024 * 1024) { alert('5MB以下の画像を選んでください'); return; }
-
-      const status = document.getElementById('imgUploadStatus');
-      status.textContent = 'アップロード中…';
-
-      try {
-        const reader = new FileReader();
-        const base64 = await new Promise((res, rej) => {
-          reader.onload = e => res(e.target.result.split(',')[1]);
-          reader.onerror = rej;
-          reader.readAsDataURL(file);
-        });
-
-        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const path = `images/${Date.now()}_${safeName}`;
-
-        const token = localStorage.getItem('yupe_gh_token');
-        const r = await fetch(`https://api.github.com/repos/conny3100-blip/yupe-hp/contents/${path}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'token ' + token,
-            'Accept': 'application/vnd.github+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ message: '画像をアップロード', content: base64 })
-        });
-        if (!r.ok) { const d = await r.json(); throw new Error(d.message); }
-
-        // 本文テキストエリアのカーソル位置に挿入
-        const ta = document.getElementById('ieBody');
-        const tag = `\n[img:${path}]\n`;
-        const start = ta.selectionStart;
-        ta.value = ta.value.slice(0, start) + tag + ta.value.slice(ta.selectionEnd);
-        ta.selectionStart = ta.selectionEnd = start + tag.length;
-        ta.focus();
-
-        status.textContent = '✓ 挿入しました';
-        setTimeout(() => { status.textContent = 'JPG・PNG・GIF対応（5MB以下）'; }, 2000);
-      } catch(e) {
-        status.textContent = '失敗: ' + e.message;
-      }
-      input.value = '';
     }
   </script>
 </body>
