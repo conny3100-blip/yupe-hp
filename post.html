@@ -48,7 +48,7 @@
     <p class="footer-copy">&copy; 2026 ゆぺ &nbsp;|&nbsp; 本サイトはアフィリエイト広告を含みます</p>
   </footer>
 
-  <script src="blog.js"></script>
+  <script src="blog.js?v=3"></script>
   <script>
     const id = getParam('id');
     const el = document.getElementById('postContent');
@@ -91,6 +91,9 @@
         </div>
         <a class="back-link" href="index.html">← Back to Home</a>
       `;
+
+      // 管理者ツールバー表示
+      renderAdminBar(id);
     });
   </script>
 </body>

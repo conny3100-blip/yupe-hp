@@ -71,7 +71,7 @@
     <p class="footer-copy">&copy; 2026 ゆぺ &nbsp;|&nbsp; 本サイトはアフィリエイト広告を含みます</p>
   </footer>
 
-  <script src="blog.js?v=2"></script>
+  <script src="blog.js?v=3"></script>
   <script>
     const thumbClasses = ['thumb-1','thumb-2','thumb-3'];
     const grid = document.getElementById('postGrid');
@@ -92,6 +92,13 @@
             </a>
           </article>
         `).join('');
+
+        // 管理者ログイン中はカードに編集・削除ボタンを追加
+        if (isAdmin()) {
+          document.querySelectorAll('.post-card').forEach((card, i) => {
+            renderAdminCardButtons(posts[i].id, card);
+          });
+        }
       }
     });
   </script>

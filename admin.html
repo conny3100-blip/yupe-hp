@@ -261,7 +261,11 @@
       show('tokenWrap');
     } else if (sessionStorage.getItem('yupe_admin')) {
       show('adminApp');
-      loadPosts();
+      loadPosts().then(() => {
+        // ?edit=ID で直接エディタを開く
+        const editId = new URLSearchParams(location.search).get('edit');
+        if (editId) showEditor(editId);
+      });
     } else {
       show('loginWrap');
     }
