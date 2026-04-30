@@ -254,6 +254,20 @@
           <input class="editor-input" type="text" id="editCategory" placeholder="例：子ども・教育、お金・節約、健康・美容">
         </div>
         <div class="editor-full">
+          <label class="editor-label">サムネイル画像（一覧ページに表示される写真）</label>
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <button type="button" class="img-upload-btn" onclick="chooseThumbnail()">🖼 写真を選ぶ</button>
+            <span id="thumbStatus" style="font-size:0.78rem;color:#8aaabb;"></span>
+          </div>
+          <div id="thumbPreviewWrap" style="margin-top:0.8rem;display:none;">
+            <img id="thumbPreview" src="" alt="サムネイルプレビュー"
+              style="max-width:260px;max-height:160px;object-fit:cover;border:1px solid #d8e6f0;border-radius:3px;">
+            <button type="button" onclick="removeThumbnail()"
+              style="display:block;margin-top:0.4rem;font-size:0.72rem;color:#c0392b;background:none;border:none;cursor:pointer;font-family:inherit;">✕ 削除</button>
+          </div>
+          <input type="hidden" id="editThumbnail">
+        </div>
+        <div class="editor-full">
           <label class="editor-label">本文 *（太字・見出し・リスト・画像など使えます）</label>
           <div id="adminQuill"></div>
         </div>
@@ -488,6 +502,7 @@
       document.getElementById('editDate').value = p.date || '';
       document.getElementById('editExcerpt').value = p.excerpt || '';
       document.getElementById('editCategory').value = p.category || '';
+      setThumbPreview(p.thumbnail || '');
       const body = p.body || '';
       if (body.trim().startsWith('<')) {
         adminQuill.root.innerHTML = body;
@@ -501,6 +516,7 @@
       document.getElementById('editDate').value = todayJa();
       document.getElementById('editExcerpt').value = '';
       document.getElementById('editCategory').value = '';
+      setThumbPreview('');
       adminQuill.root.innerHTML = '';
     }
     document.getElementById('editPostTitle').focus();
@@ -518,8 +534,9 @@
     const body     = adminQuill.root.innerHTML;
     const excerpt  = document.getElementById('editExcerpt').value.trim()
       || adminQuill.getText().replace(/\n/g,' ').substring(0, 80) + '…';
-    const category = document.getElementById('editCategory').value.trim();
-    const editId   = document.getElementById('editId').value;
+    const category  = document.getElementById('editCategory').value.trim();
+    const thumbnail = document.getElementById('editThumbnail').value.trim();
+    const editId    = document.getElementById('editId').value;
 
     if (!title || adminQuill.getText().trim() === '') {
       alert('タイトルと本文は必須です。'); return;
@@ -533,10 +550,10 @@
 
     if (editId) {
       const idx = _posts.findIndex(p => String(p.id) === String(editId));
-      if (idx !== -1) _posts[idx] = { ..._posts[idx], title, date, excerpt, body, category };
+      if (idx !== -1) _posts[idx] = { ..._posts[idx], title, date, excerpt, body, category, thumbnail };
     } else {
       const newId = String(Date.now());
-      _posts.unshift({ id: newId, title, date, excerpt, body, category });
+      _posts.unshift({ id: newId, title, date, excerpt, body, category, thumbnail });
     }
 
     try {
@@ -568,6 +585,43 @@
       setStatus('削除失敗: ' + e.message, 'error');
       await loadPosts();
     }
+  }
+
+  // ===== サムネイル =====
+  function setThumbPreview(url) {
+    document.getElementById('editThumbnail').value = url;
+    const wrap = document.getElementById('thumbPreviewWrap');
+    const img  = document.getElementById('thumbPreview');
+    if (url) {
+      img.src = url;
+      wrap.style.display = '';
+      document.getElementById('thumbStatus').textContent = '';
+    } else {
+      wrap.style.display = 'none';
+      img.src = '';
+    }
+  }
+
+  function removeThumbnail() {
+    setThumbPreview('');
+  }
+
+  function chooseThumbnail() {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { alert('5MB以下の画像を選んでください'); return; }
+      document.getElementById('thumbStatus').textContent = 'アップロード中…';
+      try {
+        const url = await uploadImage(file);
+        setThumbPreview(url);
+      } catch(e) {
+        document.getElementById('thumbStatus').textContent = '失敗: ' + e.message;
+      }
+    };
+    input.click();
   }
 
   function todayJa() {

@@ -112,8 +112,10 @@
       grid.innerHTML = posts.map((p, i) => `
         <article class="post-card" data-cat="${escHtml(p.category || '')}">
           <a href="post.html?id=${p.id}">
-            <div class="post-card-thumb ${thumbClasses[i % 3]}">
-              <span class="post-card-thumb-cross">✝</span>
+            <div class="post-card-thumb ${p.thumbnail ? '' : thumbClasses[i % 3]}">
+              ${p.thumbnail
+                ? `<img src="${escHtml(p.thumbnail)}" alt="${escHtml(p.title)}" loading="lazy">`
+                : '<span class="post-card-thumb-cross">✝</span>'}
             </div>
             ${p.category ? `<span class="post-card-cat">${escHtml(p.category)}</span>` : ''}
             <time class="post-date">${p.date}</time>
