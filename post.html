@@ -240,30 +240,87 @@
       }).join('');
     }
 
+    // ===== カテゴリ別 楽天バナー設定 =====
+    const rakutenBanners = {
+      '子ども・教育': {
+        icon: '📚',
+        title: '子ども・教育グッズを楽天で探す',
+        desc: '知育玩具・英語教材・学習グッズなど、子どもの成長に役立つアイテムが勢ぞろい！',
+        url: 'https://search.rakuten.co.jp/search/mall/知育玩具/',
+        btn: '楽天市場で見る →'
+      },
+      'お金・節約': {
+        icon: '💰',
+        title: 'ふるさと納税で節約＆ポイントGET',
+        desc: '楽天ふるさと納税なら豪華返礼品＋楽天ポイントが貯まってお得！',
+        url: 'https://event.rakuten.co.jp/furusato/',
+        btn: 'ふるさと納税を見る →'
+      },
+      '副業・AI': {
+        icon: '💻',
+        title: '副業・仕事効率化グッズを楽天で',
+        desc: 'ビジネス書・デスク周り・PC周辺機器など在宅ワークに役立つアイテム！',
+        url: 'https://search.rakuten.co.jp/search/mall/在宅ワーク+グッズ/',
+        btn: '楽天市場で見る →'
+      },
+      'おでかけ・カフェ': {
+        icon: '☕',
+        title: 'おでかけグッズを楽天で探す',
+        desc: 'お出かけバッグ・カフェグッズ・旅行小物など、おでかけをもっと楽しく！',
+        url: 'https://search.rakuten.co.jp/search/mall/お出かけ+バッグ/',
+        btn: '楽天市場で見る →'
+      },
+      '健康・美容': {
+        icon: '✨',
+        title: '健康・美容グッズを楽天で探す',
+        desc: 'サプリ・スキンケア・フィットネスグッズなど、毎日のケアに役立つアイテム！',
+        url: 'https://search.rakuten.co.jp/search/mall/美容+健康/',
+        btn: '楽天市場で見る →'
+      },
+      '暮らし': {
+        icon: '🏠',
+        title: '暮らしをもっと快適に！楽天で探す',
+        desc: '生活雑貨・インテリア・家電など、日々の暮らしを豊かにするアイテムが満載！',
+        url: 'https://search.rakuten.co.jp/search/mall/生活雑貨/',
+        btn: '楽天市場で見る →'
+      },
+      'default': {
+        icon: '🛍',
+        title: '楽天市場でお得にお買い物',
+        desc: 'ポイントが貯まる・使える！日用品からグルメまで何でもそろう楽天市場へ。',
+        url: 'https://www.rakuten.co.jp/',
+        btn: '楽天市場を見る →'
+      }
+    };
+
     // ===== 記事表示 =====
     function renderPost(post) {
       _currentPost = post;
       document.title = post.title + ' — ゆぺのにっき';
 
-      const bodyHtml  = renderBody(post.body || '');
+      const bodyHtml = renderBody(post.body || '');
+      const banner   = rakutenBanners[post.category] || rakutenBanners['default'];
+
       el.innerHTML = `
-        <p class="pr-notice">※ 本記事にはアフィリエイト広告（楽天・Etsy）が含まれる場合があります。</p>
+        <p class="pr-notice">※ 本記事にはアフィリエイト広告（楽天市場）が含まれる場合があります。</p>
         <header class="post-single-header">
           <time class="post-date">${escHtml(post.date)}</time>
           <h1>${escHtml(post.title)}</h1>
         </header>
         <div class="post-body">${bodyHtml}</div>
-        <div class="rakuten-banner">
-          <span class="rakuten-banner-label">PR / 楽天でおすすめ</span>
+
+        <a class="rakuten-banner" href="${banner.url}" target="_blank" rel="noopener sponsored">
+          <span class="rakuten-banner-label">PR / 楽天市場</span>
           <div class="rakuten-banner-inner">
-            <div class="rakuten-banner-img">🎁</div>
+            <div class="rakuten-banner-img">${banner.icon}</div>
             <div class="rakuten-banner-text">
-              <h4>楽天ふるさと納税</h4>
-              <p>ゆぺおすすめの返礼品はこちら！ポイントも貯まってお得です。</p>
-              <a class="rakuten-btn" href="https://affiliate.rakuten.co.jp/" target="_blank" rel="noopener sponsored">楽天で見る →</a>
+              <h4>${banner.title}</h4>
+              <p>${banner.desc}</p>
+              <span class="rakuten-btn">${banner.btn}</span>
             </div>
           </div>
-        </div>
+        </a>
+
         <a class="back-link" href="index.html">← Back to Home</a>
       `;
       if (isAdmin()) document.getElementById('adminBar').classList.add('show');
