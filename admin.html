@@ -257,10 +257,6 @@
           <label class="editor-label">本文 *（太字・見出し・リスト・画像など使えます）</label>
           <div id="adminQuill"></div>
         </div>
-        <div class="editor-full">
-          <label class="editor-label" for="editVerse">聖書の言葉（任意）</label>
-          <input class="editor-input" type="text" id="editVerse" placeholder="例：神は愛です。— ヨハネの手紙一 4:8">
-        </div>
         <div class="editor-actions">
           <button class="btn-save" id="btnSave" onclick="savePost()">保存して公開する</button>
           <button class="btn-cancel" onclick="showList()">キャンセル</button>
@@ -492,7 +488,6 @@
       document.getElementById('editDate').value = p.date || '';
       document.getElementById('editExcerpt').value = p.excerpt || '';
       document.getElementById('editCategory').value = p.category || '';
-      document.getElementById('editVerse').value = p.verse || '';
       const body = p.body || '';
       if (body.trim().startsWith('<')) {
         adminQuill.root.innerHTML = body;
@@ -506,7 +501,6 @@
       document.getElementById('editDate').value = todayJa();
       document.getElementById('editExcerpt').value = '';
       document.getElementById('editCategory').value = '';
-      document.getElementById('editVerse').value = '';
       adminQuill.root.innerHTML = '';
     }
     document.getElementById('editPostTitle').focus();
@@ -525,7 +519,6 @@
     const excerpt  = document.getElementById('editExcerpt').value.trim()
       || adminQuill.getText().replace(/\n/g,' ').substring(0, 80) + '…';
     const category = document.getElementById('editCategory').value.trim();
-    const verse    = document.getElementById('editVerse').value.trim();
     const editId   = document.getElementById('editId').value;
 
     if (!title || adminQuill.getText().trim() === '') {
@@ -540,10 +533,10 @@
 
     if (editId) {
       const idx = _posts.findIndex(p => String(p.id) === String(editId));
-      if (idx !== -1) _posts[idx] = { ..._posts[idx], title, date, excerpt, body, verse, category };
+      if (idx !== -1) _posts[idx] = { ..._posts[idx], title, date, excerpt, body, category };
     } else {
       const newId = String(Date.now());
-      _posts.unshift({ id: newId, title, date, excerpt, body, verse, category });
+      _posts.unshift({ id: newId, title, date, excerpt, body, category });
     }
 
     try {

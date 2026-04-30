@@ -172,11 +172,6 @@
         <div id="ieQuill"></div>
       </div>
 
-      <div class="ie-section">
-        <label class="ie-label">聖書の言葉（任意）</label>
-        <input class="ie-input" type="text" id="ieVerse" placeholder="例：神は愛です。— ヨハネの手紙一 4:8">
-      </div>
-
       <div class="ie-actions">
         <button class="ie-btn-save" id="ieSaveBtn" onclick="ieSave()">保存して公開する</button>
         <button class="ie-btn-cancel" onclick="ieClose()">キャンセル</button>
@@ -251,16 +246,13 @@
       document.title = post.title + ' — ゆぺのにっき';
 
       const bodyHtml  = renderBody(post.body || '');
-      const verseHtml = post.verse
-        ? `<blockquote>「${escHtml(post.verse)}」</blockquote>` : '';
-
       el.innerHTML = `
         <p class="pr-notice">※ 本記事にはアフィリエイト広告（楽天・Etsy）が含まれる場合があります。</p>
         <header class="post-single-header">
           <time class="post-date">${escHtml(post.date)}</time>
           <h1>${escHtml(post.title)}</h1>
         </header>
-        <div class="post-body">${bodyHtml}${verseHtml}</div>
+        <div class="post-body">${bodyHtml}</div>
         <div class="rakuten-banner">
           <span class="rakuten-banner-label">PR / 楽天でおすすめ</span>
           <div class="rakuten-banner-inner">
@@ -367,7 +359,6 @@
       document.getElementById('ieDate').value     = _currentPost.date || '';
       document.getElementById('ieExcerpt').value  = _currentPost.excerpt || '';
       document.getElementById('ieCategory').value = _currentPost.category || '';
-      document.getElementById('ieVerse').value    = _currentPost.verse || '';
       document.getElementById('ieMsg').textContent = '';
       document.getElementById('ieSaveBtn').disabled = false;
 
@@ -396,7 +387,6 @@
     async function ieSave() {
       const title    = document.getElementById('ieTitle').value.trim();
       const date     = document.getElementById('ieDate').value.trim();
-      const verse    = document.getElementById('ieVerse').value.trim();
       const category = document.getElementById('ieCategory').value.trim();
       const body     = quill.root.innerHTML;
       const excerpt  = document.getElementById('ieExcerpt').value.trim()
@@ -415,7 +405,7 @@
         if (!posts) throw new Error('記事の取得に失敗しました');
         const idx = posts.findIndex(p => String(p.id) === String(postId));
         if (idx === -1) throw new Error('記事が見つかりません');
-        posts[idx] = { ...posts[idx], title, date, excerpt, body, verse, category };
+        posts[idx] = { ...posts[idx], title, date, excerpt, body, category };
         await ghSavePosts(posts);
         msg.textContent = '✓ 保存しました！';
         _currentPost = posts[idx];
