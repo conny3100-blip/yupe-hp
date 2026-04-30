@@ -286,7 +286,7 @@
     const token = localStorage.getItem('yupe_gh_token');
     if (!token) {
       show('tokenWrap');
-    } else if (sessionStorage.getItem('yupe_admin')) {
+    } else if (localStorage.getItem('yupe_admin')) {
       show('adminApp');
       loadPosts().then(() => {
         // ?edit=ID で直接エディタを開く
@@ -323,7 +323,7 @@
   function doLogin() {
     const pw = document.getElementById('pw').value;
     if (pw === ADMIN_PW) {
-      sessionStorage.setItem('yupe_admin', '1');
+      localStorage.setItem('yupe_admin', '1');
       document.getElementById('loginError').style.display = 'none';
       show('adminApp');
       loadPosts();
@@ -336,7 +336,7 @@
   });
 
   function doLogout() {
-    sessionStorage.removeItem('yupe_admin');
+    localStorage.removeItem('yupe_admin');
     show('loginWrap');
   }
 

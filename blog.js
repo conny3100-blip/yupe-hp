@@ -41,7 +41,7 @@ function escHtml(s) {
 
 // ===== 管理者チェック =====
 function isAdmin() {
-  return !!sessionStorage.getItem('yupe_admin');
+  return !!localStorage.getItem('yupe_admin');
 }
 
 // ===== GitHub API: posts.json を取得（SHA付き）=====

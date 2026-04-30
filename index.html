@@ -40,6 +40,15 @@
       <h2>Recent Posts</h2>
       <div class="section-line"></div>
     </div>
+    <div class="category-filter" id="categoryFilter">
+      <button class="cat-btn active" data-cat="all">すべて</button>
+      <button class="cat-btn" data-cat="子ども・教育">子ども・教育</button>
+      <button class="cat-btn" data-cat="お金・節約">お金・節約</button>
+      <button class="cat-btn" data-cat="副業・AI">副業・AI</button>
+      <button class="cat-btn" data-cat="おでかけ・カフェ">おでかけ</button>
+      <button class="cat-btn" data-cat="健康・美容">健康・美容</button>
+      <button class="cat-btn" data-cat="暮らし">暮らし</button>
+    </div>
     <div class="post-grid" id="postGrid">
       <!-- 記事はJSで動的に表示 -->
     </div>
@@ -71,34 +80,55 @@
     <p class="footer-copy">&copy; 2026 ゆぺ &nbsp;|&nbsp; 本サイトはアフィリエイト広告を含みます</p>
   </footer>
 
-  <script src="blog.js?v=3"></script>
+  <script src="blog.js?v=6"></script>
   <script>
     const thumbClasses = ['thumb-1','thumb-2','thumb-3'];
     const grid = document.getElementById('postGrid');
+    let _allPosts = [];
+    let _currentCat = 'all';
 
     fetchPosts().then(posts => {
+      _allPosts = posts;
       if (posts.length === 0) {
         grid.innerHTML = '<p style="text-align:center;color:#8aaabb;padding:3rem 0;font-size:0.9rem;">まだ記事がありません。</p>';
       } else {
-        grid.innerHTML = posts.map((p, i) => `
-          <article class="post-card">
-            <a href="post.html?id=${p.id}">
-              <div class="post-card-thumb ${thumbClasses[i % 3]}">
-                <span class="post-card-thumb-cross">✝</span>
-              </div>
-              <time class="post-date">${p.date}</time>
-              <h2 class="post-title">${escHtml(p.title)}</h2>
-              <p class="post-excerpt">${escHtml(p.excerpt)}</p>
-            </a>
-          </article>
-        `).join('');
+        renderGrid(posts);
+      }
 
-        // 管理者ログイン中はカードに編集・削除ボタンを追加
-        if (isAdmin()) {
-          document.querySelectorAll('.post-card').forEach((card, i) => {
-            renderAdminCardButtons(posts[i].id, card);
-          });
-        }
+      // カテゴリフィルター
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          _currentCat = btn.dataset.cat;
+          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const filtered = _currentCat === 'all'
+            ? _allPosts
+            : _allPosts.filter(p => p.category === _currentCat);
+          renderGrid(filtered);
+        });
+      });
+    });
+
+    function renderGrid(posts) {
+      grid.innerHTML = posts.map((p, i) => `
+        <article class="post-card" data-cat="${escHtml(p.category || '')}">
+          <a href="post.html?id=${p.id}">
+            <div class="post-card-thumb ${thumbClasses[i % 3]}">
+              <span class="post-card-thumb-cross">✝</span>
+            </div>
+            ${p.category ? `<span class="post-card-cat">${escHtml(p.category)}</span>` : ''}
+            <time class="post-date">${p.date}</time>
+            <h2 class="post-title">${escHtml(p.title)}</h2>
+            <p class="post-excerpt">${escHtml(p.excerpt)}</p>
+          </a>
+        </article>
+      `).join('');
+
+      // 管理者ログイン中はカードに編集・削除ボタンを追加
+      if (isAdmin()) {
+        document.querySelectorAll('.post-card').forEach((card, i) => {
+          renderAdminCardButtons(posts[i].id, card);
+        });
       }
     });
   </script>

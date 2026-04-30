@@ -783,6 +783,40 @@ img {
 .footer-sns .f-etsy  { background: #f1641e; }
 .footer-sns .f-insta { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
 
+/* ===== カテゴリフィルター ===== */
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+.cat-btn {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 1.1rem;
+  border-radius: 20px;
+  border: 1px solid #d8e6f0;
+  background: #fff;
+  color: #4a6070;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.cat-btn:hover { background: #edf5fd; border-color: #4a8ab4; color: #4a8ab4; }
+.cat-btn.active { background: #4a8ab4; border-color: #4a8ab4; color: #fff; }
+
+.post-card-cat {
+  display: inline-block;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: #4a8ab4;
+  background: #edf5fd;
+  border: 1px solid #c5dff0;
+  border-radius: 10px;
+  padding: 0.15rem 0.6rem;
+  margin: 0.5rem 0 0.2rem;
+}
+
 /* ===== アニメーション ===== */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }
