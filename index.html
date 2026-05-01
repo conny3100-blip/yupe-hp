@@ -34,6 +34,74 @@
     <p class="hero-subtitle">日々のことを、ゆるりと。</p>
   </section>
 
+  <!-- ① About Me -->
+  <section class="lp-about">
+    <div class="lp-about-inner">
+      <div class="lp-about-photo">
+        <div class="lp-photo-circle" id="lpProfileImg">ゆ</div>
+      </div>
+      <div class="lp-about-text">
+        <p class="lp-eyebrow">ABOUT ME</p>
+        <h2 class="lp-section-title">はじめまして、<br>ゆぺです。</h2>
+        <p class="lp-body">
+          2人の子どもを育てながら、暮らし・お金・副業・子育てのことをゆるりと綴っています。<br>
+          難しいことを「わかりやすく、やさしく」がモットー。<br>
+          気になる記事があったら、ぜひ読んでみてください。
+        </p>
+        <a class="lp-more-link" href="about.html">プロフィールを読む →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② カテゴリ紹介 -->
+  <section class="lp-features">
+    <div class="lp-features-inner">
+      <p class="lp-eyebrow" style="text-align:center;">CONTENTS</p>
+      <h2 class="lp-section-title" style="text-align:center;">こんなテーマで<br>書いています</h2>
+      <div class="lp-feat-grid">
+        <a class="lp-feat-card" href="index.html" data-filter="子ども・教育">
+          <span class="lp-feat-icon">📚</span>
+          <h3>子ども・教育</h3>
+          <p>知育・習い事・学校など<br>子育ての気づきを</p>
+        </a>
+        <a class="lp-feat-card" href="index.html" data-filter="お金・節約">
+          <span class="lp-feat-icon">💰</span>
+          <h3>お金・節約</h3>
+          <p>ふるさと納税・節約術<br>家計管理のリアルを</p>
+        </a>
+        <a class="lp-feat-card" href="index.html" data-filter="副業・AI">
+          <span class="lp-feat-icon">🤖</span>
+          <h3>副業・AI</h3>
+          <p>在宅ワーク・AIツール活用<br>稼ぐヒントを</p>
+        </a>
+        <a class="lp-feat-card" href="index.html" data-filter="おでかけ・カフェ">
+          <span class="lp-feat-icon">☕</span>
+          <h3>おでかけ・カフェ</h3>
+          <p>子連れお出かけスポット<br>カフェレポートを</p>
+        </a>
+        <a class="lp-feat-card" href="index.html" data-filter="健康・美容">
+          <span class="lp-feat-icon">🌿</span>
+          <h3>健康・美容</h3>
+          <p>ズボラでも続く<br>健康・美容習慣を</p>
+        </a>
+        <a class="lp-feat-card" href="index.html" data-filter="暮らし">
+          <span class="lp-feat-icon">🏠</span>
+          <h3>暮らし</h3>
+          <p>インテリア・整理整頓<br>日々の工夫を</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ Instagram CTA -->
+  <section class="lp-cta">
+    <h2>Instagram もやっています</h2>
+    <p>日々のこと、ゆるっと投稿中 ✝</p>
+    <a class="lp-cta-btn" href="https://www.instagram.com/YOUR_ACCOUNT" target="_blank" rel="noopener">
+      @ Instagram をフォローする
+    </a>
+  </section>
+
   <main class="container">
     <div class="section-header">
       <h2>Recent Posts</h2>
@@ -80,6 +148,20 @@
   </footer>
 
   <script src="blog.js?v=6"></script>
+  <script>
+    // LPカテゴリカードのクリックでフィルター
+    document.querySelectorAll('.lp-feat-card').forEach(card => {
+      card.addEventListener('click', e => {
+        e.preventDefault();
+        const cat = card.dataset.filter;
+        document.querySelector('.container')?.scrollIntoView({behavior:'smooth'});
+        setTimeout(() => {
+          const btn = document.querySelector(`.cat-btn[data-cat="${cat}"]`);
+          if (btn) btn.click();
+        }, 400);
+      });
+    });
+  </script>
   <script>
     const thumbClasses = ['thumb-1','thumb-2','thumb-3'];
     const grid = document.getElementById('postGrid');

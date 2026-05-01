@@ -840,6 +840,230 @@ a.rakuten-banner:hover .rakuten-btn { background: #a00000; }
   margin: 0.5rem 0 0.2rem;
 }
 
+/* ===== LP セクション共通 ===== */
+.lp-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-bottom: 0.7rem;
+  font-family: 'Georgia', serif;
+}
+.lp-section-title {
+  font-size: 1.5rem;
+  font-weight: normal;
+  line-height: 1.65;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  margin-bottom: 1.2rem;
+}
+.lp-body {
+  font-size: 0.93rem;
+  line-height: 2;
+  color: var(--text-mid);
+  margin-bottom: 1.5rem;
+}
+.lp-more-link {
+  font-size: 0.82rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(74,138,180,0.35);
+  padding-bottom: 2px;
+  transition: border-color 0.2s;
+}
+.lp-more-link:hover { opacity:1; border-bottom-color: var(--accent); }
+
+/* ===== LP About Me ===== */
+.lp-about {
+  background: var(--bg-light);
+  padding: 5rem 2rem;
+}
+.lp-about-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+}
+.lp-about-photo { flex-shrink: 0; }
+.lp-photo-circle {
+  width: 170px; height: 170px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#d6e4f5 0%,#eef4fb 100%);
+  border: 3px solid rgba(200,168,74,0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.2rem;
+  color: var(--accent);
+  font-family: 'Hiragino Mincho ProN','Yu Mincho',serif;
+  overflow: hidden;
+}
+.lp-photo-circle img {
+  width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+}
+.lp-about-text { flex: 1; }
+
+/* ===== LP Features（カテゴリ）===== */
+.lp-features {
+  padding: 5rem 2rem;
+  background: #fff;
+}
+.lp-features-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+.lp-feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1.2rem;
+  margin-top: 2.5rem;
+}
+.lp-feat-card {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.8rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.lp-feat-card:hover {
+  opacity:1;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(74,138,180,0.12);
+}
+.lp-feat-icon { font-size: 2rem; display: block; margin-bottom: 0.7rem; }
+.lp-feat-card h3 {
+  font-size: 0.85rem; font-weight: normal;
+  letter-spacing: 0.1em; color: var(--text); margin-bottom: 0.4rem;
+}
+.lp-feat-card p { font-size: 0.72rem; color: var(--text-light); line-height: 1.7; }
+
+/* ===== LP CTA（Instagram誘導）===== */
+.lp-cta {
+  background: linear-gradient(135deg,#1e2d3a 0%,#2a4055 100%);
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #fff;
+}
+.lp-cta h2 {
+  font-size: 1.1rem; font-weight: normal;
+  letter-spacing: 0.2em; margin-bottom: 0.6rem;
+}
+.lp-cta p { font-size: 0.82rem; color: rgba(255,255,255,0.65); margin-bottom: 1.6rem; }
+.lp-cta-btn {
+  display: inline-block;
+  background: #fff; color: #1e2d3a;
+  font-size: 0.8rem; letter-spacing: 0.12em;
+  padding: 0.75rem 2rem; border-radius: 30px;
+  text-decoration: none; transition: opacity 0.2s;
+}
+.lp-cta-btn:hover { opacity: 0.85; }
+
+/* ===== About ページ ===== */
+.about-hero {
+  background: var(--bg-light);
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.about-avatar-large {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#d6e4f5 0%,#eef4fb 100%);
+  border: 3px solid rgba(200,168,74,0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.8rem; color: var(--accent);
+  font-family: 'Hiragino Mincho ProN',serif;
+  margin: 0 auto 1.2rem;
+  overflow: hidden;
+}
+.about-avatar-large img {
+  width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+}
+.about-hero h1 {
+  font-size: 1.6rem; font-weight: normal;
+  letter-spacing: 0.2em; margin-bottom: 0.4rem;
+}
+.about-tagline { font-size: 0.82rem; color: var(--text-light); letter-spacing: 0.15em; }
+
+.about-profile-wrap {
+  max-width: 680px; margin: 4rem auto; padding: 0 2rem 4rem;
+}
+.about-section { margin-bottom: 3.5rem; }
+.about-section h2 {
+  font-size: 1rem; font-weight: normal;
+  letter-spacing: 0.2em; color: var(--text);
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.about-section p {
+  font-size: 0.92rem; line-height: 2; color: var(--text-mid); margin-bottom: 0.8rem;
+}
+.about-topics {
+  list-style: none;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.about-topics li {
+  font-size: 0.88rem; color: var(--text-mid);
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.6rem 1rem;
+}
+.about-sns-links { display: flex; flex-direction: column; gap: 0.8rem; }
+.about-sns-link {
+  display: flex; align-items: center; gap: 0.8rem;
+  font-size: 0.88rem; color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.9rem 1.2rem;
+  text-decoration: none; transition: background 0.15s;
+}
+.about-sns-link:hover { background: var(--bg-light); opacity:1; }
+
+/* ===== Shop ページ ===== */
+.shop-hero {
+  background: linear-gradient(135deg,#f5ecd6 0%,#faf5ec 100%);
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.shop-hero h1 {
+  font-size: 1.8rem; font-weight: normal;
+  letter-spacing: 0.25em; margin-bottom: 0.5rem;
+}
+.shop-hero p { font-size: 0.88rem; color: var(--text-mid); letter-spacing: 0.1em; }
+
+.shop-etsy-cta {
+  max-width: 600px; margin: 3rem auto;
+  background: #fff; border: 2px solid var(--gold);
+  border-radius: 8px; padding: 2.5rem 2rem; text-align: center;
+}
+.shop-etsy-cta p { font-size: 0.92rem; color: var(--text-mid); margin-bottom: 1.5rem; line-height: 1.9; }
+.shop-etsy-btn {
+  display: inline-block;
+  background: #f1641e; color: #fff;
+  font-size: 0.88rem; letter-spacing: 0.12em;
+  padding: 0.85rem 2.5rem; border-radius: 30px;
+  text-decoration: none; transition: opacity 0.2s;
+}
+.shop-etsy-btn:hover { opacity:0.85; }
+
+/* ===== Contact ページ ===== */
+.contact-hero {
+  background: var(--bg-light);
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.contact-hero h1 {
+  font-size: 1.8rem; font-weight: normal;
+  letter-spacing: 0.25em; margin-bottom: 0.5rem;
+}
+.contact-hero p { font-size: 0.88rem; color: var(--text-mid); letter-spacing: 0.1em; }
+
 /* ===== アニメーション ===== */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }

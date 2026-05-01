@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact — ゆぺのにっき</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
@@ -18,17 +18,20 @@
     </ul>
   </nav>
 
-  <section class="page-hero">
-    <h1 class="page-hero-title">Contact</h1>
-    <p class="page-hero-sub">お気軽にメッセージをどうぞ</p>
+  <!-- Hero -->
+  <section class="contact-hero">
+    <p class="lp-eyebrow">✝ GET IN TOUCH</p>
+    <h1>Contact</h1>
+    <p>お気軽にメッセージをどうぞ</p>
   </section>
 
   <main class="contact-wrap">
 
-    <p class="contact-intro">ご質問・ご感想・ショップへのお問い合わせなど、なんでもお気軽にどうぞ。<br>できる限り返信いたします。</p>
+    <p class="contact-intro">
+      ご質問・ご感想・ショップへのお問い合わせなど、なんでもお気軽にどうぞ。<br>
+      できる限り返信いたします。
+    </p>
 
-    <!-- Formspree を使った送信フォーム -->
-    <!-- action の YOUR_FORM_ID を formspree.io で取得したIDに変更してください -->
     <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
 
       <div class="form-group">
@@ -55,19 +58,22 @@
 
     </form>
 
-    <p class="contact-note">
-      ✝ Powered by <a href="https://formspree.io" target="_blank" rel="noopener">Formspree</a><br>
-      <small>※ 送信機能を有効にするには <a href="https://formspree.io" target="_blank">formspree.io</a> で無料登録してフォームIDを取得し、<code>YOUR_FORM_ID</code> を置き換えてください。</small>
+    <p class="contact-note" style="margin-top:2rem;font-size:0.75rem;color:var(--text-light);text-align:center;">
+      ✝ このフォームはFormspreeを使用しています
     </p>
 
   </main>
 
   <footer class="site-footer">
     <span class="footer-cross">✝</span>
+    <div class="footer-sns">
+      <a class="f-insta" href="https://www.instagram.com/YOUR_ACCOUNT" target="_blank" rel="noopener" title="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+    </div>
     <p class="footer-title">ゆぺのにっき</p>
-    <p class="footer-copy">&copy; 2026 ゆぺ</p>
+    <p class="footer-copy">&copy; 2026 ゆぺ &nbsp;|&nbsp; 本サイトはアフィリエイト広告を含みます</p>
   </footer>
 
-  <script src="script.js"></script>
 </body>
 </html>
