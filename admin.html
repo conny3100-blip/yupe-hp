@@ -366,7 +366,9 @@
       if (!res.ok) throw new Error('取得失敗 ' + res.status);
       const data = await res.json();
       _fileSha = data.sha;
-      _posts = JSON.parse(atob(data.content.replace(/\n/g, '')));
+      const _binary = atob(data.content.replace(/\n/g, ''));
+      const _bytes = Uint8Array.from(_binary, c => c.charCodeAt(0));
+      _posts = JSON.parse(new TextDecoder().decode(_bytes));
       setStatus('', '');
       renderTable();
     } catch(e) {

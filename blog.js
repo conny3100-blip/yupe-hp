@@ -57,7 +57,9 @@ async function ghFetchPosts() {
   if (!res.ok) return null;
   const data = await res.json();
   _fileSha = data.sha;
-  return JSON.parse(atob(data.content.replace(/\n/g, '')));
+  const binary = atob(data.content.replace(/\n/g, ''));
+  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
 }
 
 // ===== GitHub API: posts.json を保存 =====
