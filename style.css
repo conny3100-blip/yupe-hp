@@ -402,6 +402,15 @@ img {
   color: #8aaabb;
   letter-spacing: 0.1em;
 }
+.footer-admin-link {
+  display: inline-block;
+  margin-top: 0.8rem;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.15);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+.footer-admin-link:hover { color: rgba(255,255,255,0.5); }
 
 /* ===== ページヒーロー（Shop / Contact） ===== */
 .page-hero {
