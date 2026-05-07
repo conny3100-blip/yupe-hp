@@ -773,6 +773,7 @@ a.rakuten-banner:hover .rakuten-btn { background: #a00000; }
 .sns-float-btn:hover { opacity: 0.88; transform: scale(1.08); color: #fff; }
 .sns-float-btn.etsy-float  { background: #f1641e; }
 .sns-float-btn.insta-float { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
+.sns-float-btn.note-float  { background: #41c9b4; }
 
 .sns-float-label {
   font-size: 0.6rem;
@@ -805,6 +806,7 @@ a.rakuten-banner:hover .rakuten-btn { background: #a00000; }
 .footer-sns a:hover { opacity: 0.8; color: #fff; }
 .footer-sns .f-etsy  { background: #f1641e; }
 .footer-sns .f-insta { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
+.footer-sns .f-note  { background: #41c9b4; }
 
 /* ===== カテゴリフィルター ===== */
 .category-filter {
@@ -959,6 +961,7 @@ a.rakuten-banner:hover .rakuten-btn { background: #a00000; }
   text-decoration: none; transition: opacity 0.2s;
 }
 .lp-cta-btn:hover { opacity: 0.85; }
+.lp-cta-btn-note { background: #41c9b4; color: #fff; }
 
 /* ===== About ページ ===== */
 .about-hero {
