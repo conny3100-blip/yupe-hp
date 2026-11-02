@@ -1,0 +1,245 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>勉強ポモドーロ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+/* Layout: one centered column, ring timer on top, controls below, small daily tally at the bottom. */
+:root {
+  --bg: #eef2f4;
+  --surface: #ffffff;
+  --fg: #17252b;
+  --muted: #5d7079;
+  --line: #d3dde1;
+  --focus: #1f6f78;
+  --focus-soft: #d9ecee;
+  --rest: #b8651b;
+  --rest-soft: #f6e5d3;
+  --on-accent: #ffffff;
+  --font-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-ui: "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a1e; --surface: #17262c; --fg: #e6eef0; --muted: #93a8b0; --line: #29404a;
+    --focus: #5cc0c9; --focus-soft: #1c3a40; --rest: #e8a064; --rest-soft: #3a2a1b; --on-accent: #0f1a1e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1a1e; --surface: #17262c; --fg: #e6eef0; --muted: #93a8b0; --line: #29404a;
+  --focus: #5cc0c9; --focus-soft: #1c3a40; --rest: #e8a064; --rest-soft: #3a2a1b; --on-accent: #0f1a1e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); padding-inline: 16px; padding-block: 24px 40px; }
+main { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+body[data-mode="focus"] { --accent: var(--focus); --accent-soft: var(--focus-soft); }
+body[data-mode="rest"] { --accent: var(--rest); --accent-soft: var(--rest-soft); }
+
+.stage { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: var(--bg); }
+.layer, .scrim { position: absolute; inset: 0; }
+.layer { background-size: cover; background-position: center; }
+#layerA { background-image: url("bg-desk.jpg"); }
+#layerB { background-image: url("bg-water.jpg"); opacity: 0; transition: opacity 8s ease-in-out; }
+#layerB.on { opacity: 1; }
+.scrim { background: var(--bg); opacity: .58; }
+.dial .face { position: absolute; inset: 5%; border-radius: 50%; background: var(--surface); opacity: .78; }
+.dial svg { position: relative; }
+
+h1 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin: 0; letter-spacing: .04em; }
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.tally { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.tally strong { color: var(--fg); font-size: 1rem; }
+
+.presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; border: 0; padding: 0; margin: 0; }
+.presets label { position: relative; }
+.presets input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.presets span { display: block; text-align: center; padding: 10px 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.presets small { display: block; color: var(--muted); font-size: .72rem; margin-top: 2px; }
+.presets input:checked + span { border-color: var(--focus); background: var(--focus-soft); font-weight: 700; }
+.presets input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.dial { position: relative; width: min(100%, 320px); aspect-ratio: 1; margin: 4px auto; }
+.dial svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.dial .track { fill: none; stroke: var(--line); stroke-width: 10; }
+.dial .arc { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; transition: stroke .3s; }
+.readout { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.mode { font-family: var(--font-display); font-weight: 700; font-size: .95rem; color: var(--accent); background: var(--accent-soft); padding: 3px 14px; border-radius: 999px; }
+.time { font-family: var(--font-display); font-weight: 700; font-size: clamp(3.2rem, 17vw, 4.6rem); line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+
+.controls { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 10px; }
+button { font: inherit; font-weight: 700; border-radius: 12px; padding: 14px 8px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button.main { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-size: 1.1rem; }
+button:active { transform: translateY(1px); }
+.bgm { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.bgm button { padding: 8px 14px; font-size: .85rem; white-space: nowrap; }
+.bgm button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--fg); }
+.bgm label { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; font-size: .8rem; color: var(--muted); }
+.bgm input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); }
+.hint { color: var(--muted); font-size: .8rem; line-height: 1.7; margin: 0; text-align: center; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="stage" aria-hidden="true">
+  <div class="layer" id="layerA"></div>
+  <div class="layer" id="layerB"></div>
+  <div class="scrim"></div>
+</div>
+
+<main>
+  <header>
+    <h1>勉強ポモドーロ</h1>
+    <div class="tally">今日 <strong id="count">0</strong> 回</div>
+  </header>
+
+  <fieldset class="presets" id="presets">
+    <legend hidden>時間の組み合わせ</legend>
+    <label><input type="radio" name="preset" value="15,3"><span>15 / 3<small>ちょっとだけ</small></span></label>
+    <label><input type="radio" name="preset" value="25,5" checked><span>25 / 5<small>ふつう</small></span></label>
+    <label><input type="radio" name="preset" value="50,10"><span>50 / 10<small>じっくり</small></span></label>
+  </fieldset>
+
+  <div class="dial">
+    <div class="face"></div>
+    <svg viewBox="0 0 220 220" aria-hidden="true">
+      <circle class="track" cx="110" cy="110" r="96"/>
+      <circle class="arc" id="arc" cx="110" cy="110" r="96"/>
+    </svg>
+    <div class="readout" role="timer" aria-live="off">
+      <span class="mode" id="modeLabel">集中</span>
+      <span class="time" id="time">25:00</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="reset" type="button">リセット</button>
+    <button id="toggle" type="button" class="main">スタート</button>
+    <button id="skip" type="button">スキップ</button>
+  </div>
+
+  <div class="bgm">
+    <button id="bgmToggle" type="button" aria-pressed="true">BGM オン</button>
+    <label for="bgmVol">音量 <input id="bgmVol" type="range" min="0" max="100" value="40"></label>
+  </div>
+
+  <p class="hint">集中が終わると音が鳴って、自動で休憩に切り替わります。<br>休憩のあとは「スタート」でもう一度。</p>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var C = 2 * Math.PI * 96;
+  var arc = $("arc");
+  arc.style.strokeDasharray = C;
+
+  var focusMin = 25, restMin = 5;
+  var mode = "focus", total = focusMin * 60, remaining = total;
+  var running = false, endAt = 0, timer = null, audio = null, wake = null;
+
+  function todayKey() { var d = new Date(); return "pomo-" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function loadCount() { try { return parseInt(localStorage.getItem(todayKey()) || "0", 10) || 0; } catch (e) { return 0; } }
+  function saveCount(n) { try { localStorage.setItem(todayKey(), String(n)); } catch (e) {} }
+  var count = loadCount();
+
+  function fmt(s) { s = Math.max(0, Math.ceil(s)); var m = Math.floor(s / 60), r = s % 60; return (m < 10 ? "0" : "") + m + ":" + (r < 10 ? "0" : "") + r; }
+
+  function pref(k, d) { try { var v = localStorage.getItem("pomo-" + k); return v === null ? d : v; } catch (e) { return d; } }
+  function setPref(k, v) { try { localStorage.setItem("pomo-" + k, v); } catch (e) {} }
+  var bgm = new Audio("meditative-rain.mp3");
+  bgm.loop = true; bgm.preload = "auto";
+  var bgmOn = pref("bgm", "1") === "1";
+  bgm.volume = (parseInt(pref("vol", "40"), 10) || 0) / 100;
+  $("bgmVol").value = Math.round(bgm.volume * 100);
+
+  function syncBgm() {
+    var shouldPlay = running && mode === "focus" && bgmOn;
+    if (shouldPlay && bgm.paused) { var p = bgm.play(); if (p && p.catch) p.catch(function () {}); }
+    else if (!shouldPlay && !bgm.paused) bgm.pause();
+    $("bgmToggle").textContent = bgmOn ? "BGM オン" : "BGM オフ";
+    $("bgmToggle").setAttribute("aria-pressed", bgmOn ? "true" : "false");
+  }
+
+  function render() {
+    syncBgm();
+    document.body.setAttribute("data-mode", mode);
+    $("modeLabel").textContent = mode === "focus" ? "集中" : "休憩";
+    $("time").textContent = fmt(remaining);
+    $("count").textContent = count;
+    $("toggle").textContent = running ? "一時停止" : (remaining < total ? "再開" : "スタート");
+    arc.style.strokeDashoffset = C * (1 - remaining / total);
+    document.title = running ? fmt(remaining) + " " + (mode === "focus" ? "集中" : "休憩") : "勉強ポモドーロ";
+  }
+
+  function beep() {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === "suspended") audio.resume();
+      [0, 0.28, 0.56].forEach(function (t, i) {
+        var o = audio.createOscillator(), g = audio.createGain();
+        o.type = "sine"; o.frequency.value = i === 2 ? 988 : 784;
+        g.gain.setValueAtTime(0.0001, audio.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(0.25, audio.currentTime + t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + t + 0.24);
+        o.connect(g); g.connect(audio.destination);
+        o.start(audio.currentTime + t); o.stop(audio.currentTime + t + 0.26);
+      });
+    } catch (e) {}
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+  }
+
+  function requestWake() {
+    try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function (l) { wake = l; }, function () {}); } catch (e) {}
+  }
+  function releaseWake() { try { if (wake) { wake.release(); wake = null; } } catch (e) {} }
+
+  function stop() { running = false; clearInterval(timer); timer = null; releaseWake(); }
+
+  function switchMode() {
+    if (mode === "focus") { count += 1; saveCount(count); mode = "rest"; total = restMin * 60; }
+    else { mode = "focus"; total = focusMin * 60; }
+    remaining = total;
+  }
+
+  function tick() {
+    remaining = (endAt - Date.now()) / 1000;
+    if (remaining <= 0) { stop(); beep(); switchMode(); }
+    render();
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    endAt = Date.now() + remaining * 1000;
+    timer = setInterval(tick, 250);
+    requestWake();
+    if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    render();
+  }
+
+  function reset() { stop(); total = (mode === "focus" ? focusMin : restMin) * 60; remaining = total; render(); }
+
+  $("toggle").addEventListener("click", function () { if (running) { stop(); render(); } else start(); });
+  $("bgmToggle").addEventListener("click", function () { bgmOn = !bgmOn; setPref("bgm", bgmOn ? "1" : "0"); syncBgm(); });
+  $("bgmVol").addEventListener("input", function (e) { bgm.volume = e.target.value / 100; setPref("vol", e.target.value); });
+  $("reset").addEventListener("click", reset);
+  $("skip").addEventListener("click", function () { stop(); mode = mode === "focus" ? "rest" : "focus"; total = (mode === "focus" ? focusMin : restMin) * 60; remaining = total; render(); });
+
+  $("presets").addEventListener("change", function (e) {
+    var v = e.target.value.split(",");
+    focusMin = parseInt(v[0], 10); restMin = parseInt(v[1], 10);
+    mode = "focus"; reset();
+  });
+  var bgSec = 0, showWater = false;
+  setInterval(function () {
+    if (!running) return;
+    bgSec += 1;
+    if (bgSec % 300 === 0) { showWater = !showWater; $("layerB").classList.toggle("on", showWater); }
+  }, 1000);
+  document.addEventListener("visibilitychange", function () { if (running) tick(); });
+
+  render();
+})();
+</script>
+
+</body></html>
